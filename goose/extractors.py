@@ -478,7 +478,7 @@ class ContentExtractor(object):
         on like paragraphs and tables
         """
         nodes_to_check = []
-        for tag in ['p', 'pre', 'td']:
+        for tag in ['p', 'pre', 'td', 'li']:
             items = self.parser.getElementsByTag(doc, tag=tag)
             nodes_to_check += items
         return nodes_to_check
@@ -492,15 +492,31 @@ class ContentExtractor(object):
 
         subParagraphs2 = self.parser.getElementsByTag(e, tag='p')
         if len(subParagraphs2) == 0 and e.tag is not "td":
+
+            # print "---------------------------"
+            # print e.tag
+
+            if(e.tag == 'ul' or e.tag == 'ol'):
+                link_text_length = float(len(self.parser.getElementsByTag(e, tag='a')))
+                # print "link_text_length %s" % link_text_length
+                elem_text_length = float(len(self.parser.getText(e)))
+                # print "elem_text_length %s" % elem_text_length
+                # print "link_text_length / elem_text_length) %s" % (link_text_length / elem_text_length)
+                if elem_text_length > 0 and ((link_text_length / elem_text_length) < 0.5):
+                    # print "YO"
+                    return False
+
             return True
         return False
 
     def is_nodescore_threshold_met(self, node, e):
         top_node_score = self.get_score(node)
+        # print "top_node_score %s" % top_node_score
         current_nodeScore = self.get_score(e)
+        # print "current_nodeScore %s" % current_nodeScore
         thresholdScore = float(top_node_score * .08)
 
-        if (current_nodeScore < thresholdScore) and e.tag != 'td':
+        if (current_nodeScore < thresholdScore) and e.tag not in ['td', 'ul', 'ol']:
             return False
         return True
 
@@ -514,9 +530,20 @@ class ContentExtractor(object):
         for e in self.parser.getChildren(node):
             e_tag = self.parser.getTag(e)
             if e_tag != 'p':
+                # print "is_highlink_density %s" % self.is_highlink_density(e)
+                # print "is_table_and_no_para_exist %s" % self.is_table_and_no_para_exist(e)
+                # print "is_nodescore_threshold_met %s" % self.is_nodescore_threshold_met(node, e)
+
                 if self.is_highlink_density(e) \
                     or self.is_table_and_no_para_exist(e) \
                     or not self.is_nodescore_threshold_met(node, e):
+                    from lxml import etree
+                    # print "#############################################"
+                    # print "#############################################"
+                    # print etree.tostring(e)
+                    # print "#############################################"
+                    # print "#############################################"
+                    # print "REMOVE %s" % e.tag
                     self.parser.remove(e)
         return node
 
