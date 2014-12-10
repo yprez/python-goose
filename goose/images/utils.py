@@ -68,7 +68,7 @@ class ImageUtils(object):
 
     @classmethod
     def get_mime_type(self, image_details):
-        mime_type = image_details.get_mime_type().lower()
+        mime_type = (image_details.get_mime_type() or '').lower()
         mimes = {
             'png': '.png',
             'jpg': '.jpg',
