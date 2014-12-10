@@ -95,7 +95,12 @@ class StopWords(object):
         # to generate dynamic path for file to load
         if not language in self._cached_stop_words:
             path = os.path.join('text', 'stopwords-%s.txt' % language)
-            self._cached_stop_words[language] = set(FileHelper.loadResourceFile(path).splitlines())
+            try:
+                sw_file = FileHelper.loadResourceFile(path)
+            except IOError:
+                path = os.path.join('text', 'stopwords-en.txt')
+                sw_file = FileHelper.loadResourceFile(path)
+            self._cached_stop_words[language] = set(sw_file.splitlines())
         self.STOP_WORDS = self._cached_stop_words[language]
 
     def remove_punctuation(self, content):
