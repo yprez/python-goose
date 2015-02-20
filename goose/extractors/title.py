@@ -49,6 +49,7 @@ class TitleExtractor(BaseExtractor):
         # split the title in words
         # TechCrunch | my wonderfull article
         # my wonderfull article | TechCrunch
+        title = title or ''
         title_words = title.split()
 
         # check if first letter is in TITLE_SPLITTERS
