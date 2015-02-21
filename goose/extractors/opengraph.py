@@ -32,7 +32,7 @@ class OpenGraphExtractor(BaseExtractor):
         metas = self.parser.getElementsByTag(node, 'meta')
         for meta in metas:
             attr = self.parser.getAttribute(meta, 'property')
-            if attr is not None and attr.startswith("og:"):
-                value = self.parser.getAttribute(meta, 'content')
-                opengraph_dict.update({attr.split(":")[1]: value})
+            if attr is not None and attr.startswith('og:'):
+                value = self.parser.getAttribute(meta, 'content') or ''
+                opengraph_dict.update({attr.split(':')[1]: value})
         return opengraph_dict
