@@ -36,8 +36,6 @@ class TitleExtractor(BaseExtractor):
         and use TITLE_SPLITTERS to reformat title
         """
         # check if we have the site name in opengraph data
-        title = title or ''
-
         if 'site_name' in self.article.opengraph.keys():
             site_name = self.article.opengraph['site_name']
             # remove the site name from title
@@ -76,8 +74,9 @@ class TitleExtractor(BaseExtractor):
         title = ''
 
         # rely on opengraph in case we have the data
-        if "title" in self.article.opengraph.keys():
-            title = self.article.opengraph['title']
+        opengraph_title = self.article.opengraph.get('title', '')
+        if opengraph_title:
+            title = opengraph_title
             return self.clean_title(title)
 
         # try to fetch the meta headline
